@@ -76,6 +76,8 @@ if [ "${PRUNE_PATHS:-}" == "" ]; then
         # trove testing doc is no longer published
         # https://docs.openstack.org/trove/2026.1/contributor/testing.html
         trove/2026.1_docs/contributor/testing.txt
+        neutron/2026.1_docs/contributor/policies/contributor-onboarding.html
+        neutron/2026.1_docs/contributor/contribute.html
     )
 fi
 
@@ -296,7 +298,7 @@ deps =
     fi
 
     # These projects have all their docs under "latest" instead of "2025.2"
-    if  [ "${project}" == "adjutant" ] || [ "${project}" == "cyborg" ] || [ "${project}" == "tempest" ]; then
+    if  [ "${project}" == "adjutant" ] || [ "${project}" == "tempest" ]; then
         _output_version="latest"
     else
         _output_version="${_os_version}"
