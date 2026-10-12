@@ -76,8 +76,8 @@ if [ "${PRUNE_PATHS:-}" == "" ]; then
         # trove testing doc is no longer published
         # https://docs.openstack.org/trove/2026.1/contributor/testing.html
         trove/2026.1_docs/contributor/testing.txt
-        neutron/2026.1_docs/contributor/policies/contributor-onboarding.html
-        neutron/2026.1_docs/contributor/contribute.html
+        neutron/2026.1_docs/contributor/policies/contributor-onboarding.txt
+        neutron/2026.1_docs/contributor/contribute.txt
     )
 fi
 
