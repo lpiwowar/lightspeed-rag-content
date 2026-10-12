@@ -72,6 +72,7 @@ jobs:
     needs: prepare-build-config
     uses: openstack-k8s-operators/lightspeed-mcps/.github/workflows/build-and-push-mcps.yaml@main
     with:
+      image_name: rag-content
       image_namespace: openstack-lightspeed
       build_context: .
       containerfile: ./Containerfile
@@ -105,7 +106,7 @@ jobs:
 
       - name: Sign pushed image tags
         env:
-          IMAGE_NAME: quay.io/openstack-lightspeed/${{ github.event.repository.name }}
+          IMAGE_NAME: quay.io/openstack-lightspeed/rag-content
           TAGS: ${{ needs.prepare-build-config.outputs.tags }}
           COSIGN_PRIVATE_KEY: ${{ secrets.COSIGN_PRIVATE_KEY }}
           COSIGN_PASSWORD: ${{ secrets.COSIGN_KEY_PASSWORD }}
