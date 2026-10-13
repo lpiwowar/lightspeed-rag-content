@@ -137,6 +137,12 @@ COPY --from=embeddings-builder /rag-content/vector_db /rag/vector_db/os_product_
 COPY --from=embeddings-builder /rag-content/embeddings_model /rag/embeddings_model
 COPY --from=embeddings-builder /rag-content/okp_embeddings_model /rag/okp_embeddings_model
 
+# Hugging Face cache metadata may contain root-owned files that are not
+# world-readable. Remove cache data and normalize permissions so non-root
+# collectors can copy the model directory.
+RUN rm -rf /rag/embeddings_model/.cache /rag/okp_embeddings_model/.cache && \
+    chmod -R a+rX /rag/embeddings_model /rag/okp_embeddings_model
+
 ARG INDEX_NAME
 ENV INDEX_NAME=${INDEX_NAME}
 
