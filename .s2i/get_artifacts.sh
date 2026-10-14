@@ -20,7 +20,7 @@ if [[ ! -f "${ARTIFACTS_TXT}" ]]; then
   exit 1
 fi
 
-MODEL_REVISION="9b5b096411652ec1189c68fcfb90d0a82c5b45af"
+MODEL_REVISION="2ab6fa8ea2d674564defd37171ae19079b864b33"
 
 mkdir -p "${ARTIFACTS_DIR}"
 rm -rf "${OKP_DIR}"
@@ -36,11 +36,11 @@ python - <<'PY'
 from huggingface_hub import snapshot_download
 
 snapshot_download(
-    repo_id="ibm-granite/granite-embedding-30m-english",
-    revision="9b5b096411652ec1189c68fcfb90d0a82c5b45af",
+    repo_id="ibm-granite/granite-embedding-small-english-r2",
+    revision="2ab6fa8ea2d674564defd37171ae19079b864b33",
     local_dir=".s2i/artifacts/okp_embeddings_model",
 )
-print("Downloaded ibm-granite/granite-embedding-30m-english@9b5b096411652ec1189c68fcfb90d0a82c5b45af -> .s2i/artifacts/okp_embeddings_model")
+print("Downloaded ibm-granite/granite-embedding-small-english-r2@2ab6fa8ea2d674564defd37171ae19079b864b33 -> .s2i/artifacts/okp_embeddings_model")
 PY
 
 (
@@ -63,9 +63,9 @@ if [ -z "${EXPECTED_SHA256}" ] || [ -z "${EXPECTED_SOURCE}" ]; then
   exit 1
 fi
 
-if [ "${EXPECTED_SOURCE}" != "hf://ibm-granite/granite-embedding-30m-english@${MODEL_REVISION}" ]; then
+if [ "${EXPECTED_SOURCE}" != "hf://ibm-granite/granite-embedding-small-english-r2@${MODEL_REVISION}" ]; then
   echo "ERROR: Source/revision mismatch in ${ARTIFACTS_TXT}" >&2
-  echo "       expected source: hf://ibm-granite/granite-embedding-30m-english@${MODEL_REVISION}" >&2
+  echo "       expected source: hf://ibm-granite/granite-embedding-small-english-r2@${MODEL_REVISION}" >&2
   echo "       actual source:   ${EXPECTED_SOURCE}" >&2
   exit 1
 fi

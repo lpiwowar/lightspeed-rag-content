@@ -3,4 +3,4 @@
 # <name> <manifest_sha256> <source>
 # - <manifest_sha256> is the SHA256 of .s2i/artifacts/<name>.SHA256SUM
 # - <source> encodes model id and pinned revision
-okp_embeddings_model f73c51aa14b9a78ab8b3beae1530e2ec15744e559dcf66a8c127319ab21614f5 hf://ibm-granite/granite-embedding-30m-english@9b5b096411652ec1189c68fcfb90d0a82c5b45af
+okp_embeddings_model 2ec426336cedd6d386d97ae88500774513f33693a316b3664e2f644b4783c45c hf://ibm-granite/granite-embedding-small-english-r2@2ab6fa8ea2d674564defd37171ae19079b864b33
