@@ -7,20 +7,13 @@ ARG FLAVOR=cpu
 # drop these tools and move this stage back to UBI.
 FROM registry.fedoraproject.org/fedora:40 as docs-builder
 
-ARG BUILD_UPSTREAM_DOCS=true
 ARG BUILD_OPERATORS_DOCS=true
 ARG NUM_WORKERS=1
-ARG OS_PROJECTS
-ARG OS_API_DOCS=false
-ARG PRUNE_PATHS=""
 ARG RHOSO_CA_CERT_URL=""
 ARG RHOSO_DOCS_GIT_URL=""
 ARG RHOSO_DOCS_GIT_BRANCH="main"
 
 ENV NUM_WORKERS=$NUM_WORKERS
-ENV OS_PROJECTS=$OS_PROJECTS
-ENV OS_API_DOCS=$OS_API_DOCS
-ENV PRUNE_PATHS=$PRUNE_PATHS
 ENV RHOSO_CA_CERT_URL=$RHOSO_CA_CERT_URL
 ENV RHOSO_DOCS_GIT_URL=$RHOSO_DOCS_GIT_URL
 ENV RHOSO_DOCS_GIT_BRANCH=$RHOSO_DOCS_GIT_BRANCH
@@ -40,17 +33,6 @@ RUN pkgs=$(grep -v '^#' /tmp/builddeps.txt | grep -v '^$' | tr '\n' ' ') && \
     if [ -n "${pkgs}" ]; then dnf -y install ${pkgs}; fi && \
     localedef -i en_US -f UTF-8 en_US.UTF-8 || true && \
     dnf clean all
-
-RUN python3 -m pip install . tox
-
-# TODO(S2I): This stage currently generates docs by pulling/building upstream OpenStack
-# content at image-build time. For a full S2I artifact workflow, this should move to a
-# pre-build artifact ingestion process once the S2I team defines onboarding for
-# non-OpenStack Service images.
-# Generate upstream plaintext docs when requested
-RUN if [ "$BUILD_UPSTREAM_DOCS" = "true" ]; then \
-        ./scripts/get_openstack_plaintext_docs.sh; \
-    fi
 
 # FIXME(S2I): This stage still fetches downstream docs and optional CA material via URL
 # during image build. For a real S2I flow, these inputs should arrive as validated external
@@ -79,7 +61,6 @@ RUN if [ "$BUILD_OPERATORS_DOCS" = "true" ]; then \
 FROM quay.io/lightspeed-core/rag-content-${FLAVOR}:latest as embeddings-builder
 
 ARG FLAVOR=cpu
-ARG BUILD_UPSTREAM_DOCS=true
 ARG BUILD_OPERATORS_DOCS=true
 ARG DOCS_LINK_UNREACHABLE_ACTION=warn
 ARG OS_VERSION=2026.1
@@ -101,9 +82,6 @@ COPY --from=docs-builder /rag-content /rag-content
 
 RUN if [ "$FLAVOR" = "gpu" ]; then \
         python -c "import torch, sys; available=torch.cuda.is_available(); print(f'CUDA is available: {available}'); sys.exit(0 if available else 1)"; \
-    fi && \
-    if [ "$BUILD_UPSTREAM_DOCS" = "true" ]; then \
-        FOLDER_ARG="--folder openstack-docs-plaintext"; \
     fi && \
     if [ -n "$RHOSO_DOCS_GIT_URL" ] && [ -n "$RHOSO_DOCS_EXTRA_DOCS" ]; then \
         FOLDER_ARG="$FOLDER_ARG --extra-folder $RHOSO_DOCS_EXTRA_DOCS"; \

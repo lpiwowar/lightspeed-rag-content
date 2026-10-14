@@ -5,13 +5,6 @@ python3-pip
 glibc-langpack-en
 glibc-locale-source
 
-# Needed by upstream OpenStack docs generation
-gcc
-graphviz
-openldap-devel
-python-devel
-pcre-devel
-
 # Needed by operators docs generation
 pandoc
 asciidoctor
