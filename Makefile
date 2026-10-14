@@ -17,7 +17,7 @@ RHOSO_DOCS_EXTRA_DOCS          ?= rag-docs/extra-docs
 BUILD_EXTRA_ARGS               ?=
 VECTOR_DB_TYPE                 ?= faiss
 RHOSO_IGNORE_LIST              ?= ""
-BUILD_OPERATORS_DOCS           ?= false
+BUILD_OPERATORS_DOCS           ?= true
 
 # Define behavior based on the flavor
 ifeq ($(FLAVOR),cpu)

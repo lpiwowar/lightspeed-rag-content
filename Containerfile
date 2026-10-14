@@ -8,7 +8,7 @@ ARG FLAVOR=cpu
 FROM registry.fedoraproject.org/fedora:40 as docs-builder
 
 ARG BUILD_UPSTREAM_DOCS=true
-ARG BUILD_OPERATORS_DOCS=false
+ARG BUILD_OPERATORS_DOCS=true
 ARG NUM_WORKERS=1
 ARG OS_PROJECTS
 ARG OS_API_DOCS=false
@@ -80,7 +80,7 @@ FROM quay.io/lightspeed-core/rag-content-${FLAVOR}:latest as embeddings-builder
 
 ARG FLAVOR=cpu
 ARG BUILD_UPSTREAM_DOCS=true
-ARG BUILD_OPERATORS_DOCS=false
+ARG BUILD_OPERATORS_DOCS=true
 ARG DOCS_LINK_UNREACHABLE_ACTION=warn
 ARG OS_VERSION=2026.1
 ARG INDEX_NAME=os-docs-${OS_VERSION}
@@ -105,13 +105,11 @@ RUN if [ "$FLAVOR" = "gpu" ]; then \
     if [ "$BUILD_UPSTREAM_DOCS" = "true" ]; then \
         FOLDER_ARG="--folder openstack-docs-plaintext"; \
     fi && \
-    if [ -n "$RHOSO_DOCS_GIT_URL" ]; then \
-        if [ -n "$RHOSO_DOCS_EXTRA_DOCS" ]; then \
-            FOLDER_ARG="$FOLDER_ARG --extra-folder $RHOSO_DOCS_EXTRA_DOCS"; \
-        fi; \
-        if [ "$BUILD_OPERATORS_DOCS" = "true" ]; then \
-            FOLDER_ARG="$FOLDER_ARG --operators-folder rag-docs/openstack-operators-docs-markdown"; \
-        fi; \
+    if [ -n "$RHOSO_DOCS_GIT_URL" ] && [ -n "$RHOSO_DOCS_EXTRA_DOCS" ]; then \
+        FOLDER_ARG="$FOLDER_ARG --extra-folder $RHOSO_DOCS_EXTRA_DOCS"; \
+    fi && \
+    if [ "$BUILD_OPERATORS_DOCS" = "true" ]; then \
+        FOLDER_ARG="$FOLDER_ARG --operators-folder rag-docs/openstack-operators-docs-markdown"; \
     fi && \
     if [ -z "$FOLDER_ARG" ]; then \
         echo "Error: No documentation sources enabled"; \
