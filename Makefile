@@ -2,22 +2,17 @@
 FLAVOR                         ?= cpu
 NUM_WORKERS                    ?= $$(( $(shell nproc --all) / 2))
 OS_VERSION                     ?= 2026.1
-# Check scripts/get_openstack_plaintext_docs.sh to see OS_PROJECTS defaults
-OS_PROJECTS                    ?=
-OS_API_DOCS                    ?= false
-PRUNE_PATHS                    ?= ""
 INDEX_NAME                     ?= os-docs-$(OS_VERSION)
 RHOSO_DOCS_GIT_URL             ?= ""
 RHOSO_DOCS_GIT_BRANCH          ?= ""
 RHOSO_CA_CERT_URL              ?= ""
 OSLS_CONTAINER                 ?= quay.io/openstack-lightspeed/rag-content:latest
-BUILD_UPSTREAM_DOCS            ?= true
 DOCS_LINK_UNREACHABLE_ACTION   ?= warn
 RHOSO_DOCS_EXTRA_DOCS          ?= rag-docs/extra-docs
 BUILD_EXTRA_ARGS               ?=
 VECTOR_DB_TYPE                 ?= faiss
 RHOSO_IGNORE_LIST              ?= ""
-BUILD_OPERATORS_DOCS           ?= false
+BUILD_OPERATORS_DOCS           ?= true
 
 # Define behavior based on the flavor
 ifeq ($(FLAVOR),cpu)
@@ -35,14 +30,10 @@ build-image-os: ## Build a openstack rag-content container image
 	podman build -t rag-content-openstack:$(INDEX_NAME) -f ./Containerfile \
 	--build-arg FLAVOR=$(TORCH_GROUP) \
 	--build-arg NUM_WORKERS=$(NUM_WORKERS) \
-	--build-arg OS_PROJECTS=$(OS_PROJECTS) \
 	--build-arg OS_VERSION=$(OS_VERSION) \
-	--build-arg OS_API_DOCS=$(OS_API_DOCS) \
-	--build-arg PRUNE_PATHS=$(PRUNE_PATHS) \
 	--build-arg RHOSO_DOCS_GIT_URL=$(RHOSO_DOCS_GIT_URL) \
 	--build-arg RHOSO_DOCS_GIT_BRANCH=$(RHOSO_DOCS_GIT_BRANCH) \
 	--build-arg RHOSO_CA_CERT_URL=$(RHOSO_CA_CERT_URL) \
-	--build-arg BUILD_UPSTREAM_DOCS=$(BUILD_UPSTREAM_DOCS) \
 	--build-arg DOCS_LINK_UNREACHABLE_ACTION=$(DOCS_LINK_UNREACHABLE_ACTION) \
 	--build-arg INDEX_NAME=$(INDEX_NAME) \
 	--build-arg VECTOR_DB_TYPE=$(VECTOR_DB_TYPE) \

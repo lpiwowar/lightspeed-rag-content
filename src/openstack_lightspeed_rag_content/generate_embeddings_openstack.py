@@ -2,7 +2,6 @@
 
 import json
 import logging
-import re
 import sys
 from pathlib import Path
 
@@ -14,40 +13,6 @@ from llama_index.readers.file.markdown.base import MarkdownReader
 logging.basicConfig(
     level=logging.WARNING, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
-
-
-class OpenStackDocsMetadataProcessor(MetadataProcessor):
-    """Metadata processor for OpenStack documentation."""
-
-    def __init__(self, folder_path: str):
-        super().__init__()
-        self.folder_path = Path(folder_path)
-        self.base_url = "https://docs.openstack.org"
-
-    def url_function(self, path: str) -> str:
-        """Generate the URL for a document based on its file path."""
-        path_obj = Path(path).resolve()
-        try:
-            relative_path = path_obj.relative_to(self.folder_path.resolve())
-        except ValueError:
-            relative_path = path_obj.name
-
-        relative_path = relative_path.as_posix()
-
-        # Remove _docs suffix: /cinder/2025.2_docs/ → /cinder/2025.2/
-        relative_path = re.sub(r"/(\d+\.\d+)_docs/", r"/\1/", relative_path)
-
-        # Remove _api-ref suffix: /cinder/2025.2_api-ref/ → /cinder/2025.2/api-ref/
-        relative_path = re.sub(r"/(\d+\.\d+)_api-ref/", r"/\1/api-ref/", relative_path)
-
-        # Handle "latest" version
-        relative_path = relative_path.replace("/latest_docs/", "/latest/")
-        relative_path = relative_path.replace("/latest_api-ref/", "/latest/api-ref/")
-
-        # Replace .txt with .html
-        relative_path = relative_path.replace(".txt", ".html")
-
-        return f"{self.base_url}/{relative_path}"
 
 
 # Extra docs metadata processor
@@ -173,15 +138,13 @@ if __name__ == "__main__":
 
     if not any(
         [
-            args.folder,
             args.operators_folder,
             args.extra_folder,
         ]
     ):
         print(
-            'Error: At least one of "--folder", '
-            '"--operators-folder", or "--extra-folder" options '
-            "must be provided",
+            'Error: At least one of "--operators-folder" or "--extra-folder" '
+            "options must be provided",
             file=sys.stderr,
         )
         sys.exit(1)
@@ -198,18 +161,6 @@ if __name__ == "__main__":
         manual_chunking=args.manual_chunking,
         doc_type=args.doc_type,
     )
-
-    # Process the OpenStack documents, if provided
-    if args.folder:
-        document_processor.process(
-            str(args.folder),
-            metadata=OpenStackDocsMetadataProcessor(args.folder),
-            required_exts=[
-                ".txt",
-            ],
-            unreachable_action=args.unreachable_action,
-            ignore_list=ignore_list,
-        )
 
     # Process extra-docs folders (e.g. SME content from rag-docs/extra-docs)
     for extra in args.extra_folder:

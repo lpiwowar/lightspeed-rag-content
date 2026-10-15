@@ -1,8 +1,8 @@
 # [OpenStack] RAG content
 
 This repository contains scripts that can be used to generate a vector database
-containing information from upstream OpenStack documentation, supplemental
-SME notes, and operator documentation.
+containing information from OpenStack operators documentation and supplemental
+SME notes.
 
 There are several ways how to access the OpenStack vector database:
 
@@ -33,20 +33,19 @@ python3.12 -m venv .venv && . .venv/bin/activate
 pip install .
 ```
 
-4. Generate upstream documentation in text format.
+4. Generate operators documentation in markdown format.
 
 > [!NOTE]
 > The operators-docs conversion script (`./scripts/get_openstack_operators_docs.sh`)
 > requires `pandoc` and `asciidoctor` (RHEL package: `rubygem-asciidoctor`) installed on the host.
 
 ```
-./scripts/get_openstack_plaintext_docs.sh
+./scripts/get_openstack_operators_docs.sh
 ```
 
    Useful env vars for this script:
-   - `CLEAN_FILES` what to clean on success: `venv`, `all` (whole project), or nothing (default).
-   - `NUM_WORKERS` if the default number (`nproc`) is too high
-   - `WORKING_DIR` if you don't want to use the default `/tmp/os_docs_temp`.
+   - `CLEAN_FILES` what to clean on success: `all` (whole project), or nothing (default).
+   - `WORKING_DIR` if you don't want to use the default `/tmp/os_operators_docs_temp`.
 
 5. Download the embedding model.
 
@@ -73,7 +72,7 @@ make get-embeddings-model
 ```
 python -m openstack_lightspeed_rag_content.generate_embeddings_openstack \
         -o ./vector_db/ \
-        -f openstack-docs-plaintext/ \
+        --operators-folder openstack-operators-docs-markdown \
         -md embeddings_model \
         -mn sentence-transformers/all-mpnet-base-v2 \
         -i os-docs \
@@ -85,7 +84,7 @@ python -m openstack_lightspeed_rag_content.generate_embeddings_openstack \
 ```
 python -m openstack_lightspeed_rag_content.generate_embeddings_openstack \
         -o ./vector_db/ \
-        -f openstack-docs-plaintext/ \
+        --operators-folder openstack-operators-docs-markdown \
         -md embeddings_model \
         -mn sentence-transformers/all-mpnet-base-v2 \
         -i os-docs \
@@ -155,8 +154,8 @@ podman run localhost/rag-content-openstack:latest ls /rag/vector_db/os_product_d
 
 ## Download the Pre-built Container Image Containing OpenStack Vector Database
 
-We periodically build the vector database for the upstream OpenStack documentation
-as part of this repository. The image containing this vector database is available
+We periodically build the vector database from the documentation sources configured
+in this repository. The image containing this vector database is available
 at [quay.io/openstack-lightspeed/rag-content](https://quay.io/openstack-lightspeed/rag-content).
 
 You can verify that the image was built within a job triggered by this repository

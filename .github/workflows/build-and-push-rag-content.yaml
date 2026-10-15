@@ -32,15 +32,6 @@ jobs:
         id: config
         shell: bash
         run: |
-          OS_PROJECTS=""
-          OS_API_DOCS="false"
-
-          if [ "${{ github.event_name }}" = "pull_request" ]; then
-            # Build only partial rag-content in the check pipeline
-            OS_PROJECTS="nova"
-            OS_API_DOCS="true"
-          fi
-
           INDEX_NAME="os-docs-${{ env.OS_VERSION }}-ogx"
 
           # For periodic nightly builds, use nightly-YYYYMMDD and os-docs-<version>
@@ -59,11 +50,10 @@ jobs:
             echo "build_args<<EOF"
             echo "FLAVOR=cpu"
             echo "NUM_WORKERS=4"
-            echo "OS_PROJECTS=${OS_PROJECTS}"
             echo "OS_VERSION=${{ env.OS_VERSION }}"
             echo "INDEX_NAME=${INDEX_NAME}"
             echo "DOCS_LINK_UNREACHABLE_ACTION=fail"
-            echo "OS_API_DOCS=${OS_API_DOCS}"
+            echo "BUILD_OPERATORS_DOCS=true"
             echo "VECTOR_DB_TYPE=llamastack-faiss"
             echo "EOF"
           } >> "$GITHUB_OUTPUT"
